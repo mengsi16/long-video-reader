@@ -248,3 +248,14 @@ git status --short
 ```
 
 接口细节见：`md/api.md`
+
+---
+
+## 版权与许可证
+
+| 项目 | 内容 |
+| --- | --- |
+| Copyright | Copyright 2026 mengsi16 |
+| License | Apache License 2.0 |
+
+完整许可证文本见：`LICENSE`
