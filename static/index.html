@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Video Reader</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css?v=8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+</head>
+<body>
+<div class="app-container">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <span class="top-bar-title">AI Video Reader</span>
+    <div class="top-bar-actions">
+      <button class="btn-icon" id="refreshBtn" title="刷新">
+        <i class="fas fa-sync-alt"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="main-content" id="mainContent">
+    <!-- Panel 1: Sources -->
+    <div class="panel panel-sources" id="panelSources">
+      <button class="add-source-btn" id="addSourceBtn">
+        <i class="fas fa-plus"></i>
+        <span>添加视频源</span>
+      </button>
+      <div class="video-list" id="videoList"></div>
+      <div class="providers-section">
+        <button class="btn-manage-providers" id="manageProvidersBtn">
+          <i class="fas fa-server"></i>
+          <span class="btn-manage-label">AI Provider</span>
+          <span class="provider-count zero" id="providerCount">0</span>
+        </button>
+      </div>
+    </div>
+    <div class="resize-handle" id="resizeHandle1" data-target="sources"></div>
+
+    <!-- Panel 2: Conversations -->
+    <div class="panel panel-conv" id="panelConv">
+      <button class="new-conv-btn" id="newConvBtn">
+        <i class="fas fa-plus"></i>
+        <span>新对话</span>
+      </button>
+      <div class="conv-list" id="convList">
+        <div class="conv-empty" id="convEmpty">选择视频后新建对话</div>
+      </div>
+    </div>
+    <div class="resize-handle" id="resizeHandle2" data-target="conv"></div>
+
+    <!-- Panel 3: Chat -->
+    <div class="panel panel-chat" id="panelChat">
+      <div class="chat-header" id="chatHeader" style="display:none;">
+        <h2 id="currentVideoName"></h2>
+      </div>
+      <div class="chat-body">
+        <div class="welcome-state" id="welcomeState">
+          <h1 class="welcome-title">AI Video Reader</h1>
+          <p class="welcome-subtitle">上传视频或添加 URL，开始智能分析</p>
+          <div class="welcome-actions">
+            <button class="welcome-btn welcome-btn-primary" id="welcomeUploadBtn">
+              <i class="fas fa-upload"></i>
+              <span>上传文件</span>
+            </button>
+            <button class="welcome-btn welcome-btn-secondary" id="welcomeUrlBtn">
+              <i class="fas fa-link"></i>
+              <span>粘贴链接</span>
+            </button>
+          </div>
+        </div>
+        <div class="processing-state" id="processingState" style="display:none;">
+          <div class="processing-steps" id="processingSteps"></div>
+        </div>
+        <div class="chat-messages" id="chatMessages" style="display:none;"></div>
+      </div>
+      <div class="chat-input-area" id="chatInputArea" style="display:none;">
+        <div class="chat-input-row">
+          <textarea class="chat-input" id="chatInput" placeholder="输入你的问题..." rows="1"></textarea>
+          <button class="chat-send-btn" id="chatSendBtn" title="发送">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="resize-handle" id="resizeHandle3" data-target="details"></div>
+
+    <!-- Panel 4: Details (frames / transcript) -->
+    <div class="panel panel-details" id="panelDetails">
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="frames">关键帧</button>
+        <button class="tab-btn" data-tab="transcript">转录</button>
+      </div>
+      <div class="tab-content active" id="framesTab">
+        <div class="frames-empty" id="framesEmpty">选择视频后显示关键帧</div>
+        <div class="frames-grid" id="framesGrid" style="display:none;"></div>
+      </div>
+      <div class="tab-content" id="transcriptTab">
+        <div class="tab-empty" id="transcriptEmpty">选择视频后显示转录文本</div>
+        <div class="transcript-content" id="transcriptContent" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal-overlay" id="imageModal">
+  <button class="modal-close" id="modalClose">&times;</button>
+  <img class="modal-img" id="modalImg" src="" alt="">
+</div>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal-content">
+    <h3 class="modal-title">添加视频源</h3>
+    <div class="upload-drop-zone" id="dropZone">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <div>拖放视频文件到这里</div>
+      <div style="font-size:12px;margin-top:6px;color:var(--text-tertiary);">
+        支持 MP4, MKV, WebM, MP3, M4A, WAV 等格式
+      </div>
+    </div>
+    <div class="upload-divider">或</div>
+    <input type="text" class="upload-url-input" id="urlInput" placeholder="输入视频 URL (YouTube, Bilibili...)">
+    <div class="modal-actions">
+      <button class="btn-secondary" id="uploadCancelBtn">取消</button>
+      <button class="btn-primary" id="uploadConfirmBtn">添加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Providers Modal -->
+<div class="modal-overlay" id="providersModal">
+  <div class="providers-dialog">
+    <div class="providers-dialog-header">
+      <h3 class="modal-title">AI Provider 管理</h3>
+      <button class="modal-close-x" id="providersCloseBtn" title="关闭">&times;</button>
+    </div>
+    <div class="providers-toolbar">
+      <button class="btn-primary" id="providerAddBtn">
+        <i class="fas fa-plus"></i> 添加 Provider
+      </button>
+    </div>
+    <div class="providers-empty" id="providersEmpty">暂无 Provider，请添加一个</div>
+    <div class="providers-list" id="providersList"></div>
+    <div class="providers-hint">
+      OpenAI 兼容协议即可。点 <i class="fas fa-plug"></i> 测试连通，点 <i class="far fa-star"></i> 设为默认。
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept=".mp4,.mkv,.webm,.avi,.mov,.mp3,.m4a,.wav,.flac,.ogg,.txt" hidden>
+
+<script src="/static/js/api.js?v=2"></script>
+<script src="/static/js/ui.js?v=2"></script>
+<script src="/static/js/app.js?v=2"></script>
+</body>
+</html>

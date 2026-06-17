@@ -1,0 +1,45 @@
+# Git
+.git
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+.venv/
+venv/
+ENV/
+
+# Runtime data
+data/
+temp/
+uploads/
+models/
+.cache/
+*.tmp
+*.log
+server.*.log
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local generated artifacts
+screenshot*.png
+%TEMP%*.txt
+temp_style.txt
+=5.9
+NUL

@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.so
+.Python
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+
+# Runtime data
+data/
+temp/
+uploads/
+models/
+.cache/
+
+# Logs
+*.log
+server.*.log
+
+# Local media and generated artifacts
+*.mp4
+*.avi
+*.mkv
+*.mov
+*.wmv
+*.flv
+*.webm
+*.m4a
+*.mp3
+*.wav
+*.aac
+*.flac
+*.ogg
+screenshot*.png
+%TEMP%*.txt
+temp_style.txt
+=5.9
+NUL
+
+# IDE and OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
